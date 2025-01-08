@@ -1,5 +1,5 @@
 from core.models import AnalysisResult
-import json
+from core.services.llm import LLMService
 
 def analyze_feedback(feedback):
     """
@@ -12,30 +12,26 @@ def analyze_feedback(feedback):
         AnalysisResult实例
     """
     try:
-        # TODO: 实现具体的分析逻辑
-        # 1. 如果是音频，需要先转换为文字
-        # 2. 调用大语言模型进行分析
-        # 3. 将分析结果结构化存储
+        # 创建LLM服务实例
+        llm_service = LLMService()
         
-        # 示例分析结果
-        structured_data = {
-            "sentiment": "positive",
-            "key_points": ["观点1", "观点2"],
-            "categories": ["类别1", "类别2"]
-        }
+        # 使用LLM分析反馈内容
+        analysis_result = llm_service.analyze_feedback(feedback)
         
-        summary = "这是一个示例的分析总结"
+        if not analysis_result:
+            raise Exception("LLM分析失败")
         
         # 创建或更新分析结果
-        analysis_result, created = AnalysisResult.objects.update_or_create(
+        result, created = AnalysisResult.objects.update_or_create(
             feedback=feedback,
             defaults={
-                'structured_data': structured_data,
-                'summary': summary
+                'structured_data': analysis_result['raw_analysis'],
+                'summary': analysis_result['summary'],
+                'feedback_history': analysis_result['feedback_history']
             }
         )
         
-        return analysis_result
+        return result
     except Exception as e:
         print(f"分析失败: {str(e)}")
         return None 

@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from core.models import Student
 from core.api.serializers.student import StudentSerializer
 
@@ -8,4 +9,5 @@ class StudentViewSet(viewsets.ModelViewSet):
     提供标准的 list、create、retrieve、update、destroy 操作
     """
     queryset = Student.objects.all()
-    serializer_class = StudentSerializer 
+    serializer_class = StudentSerializer
+    parser_classes = (JSONParser, FormParser, MultiPartParser) 
